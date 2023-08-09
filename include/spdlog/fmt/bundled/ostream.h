@@ -36,12 +36,19 @@ class is_streamable {
 
   template <typename> static auto test(...) -> std::false_type;
 
-  using result = decltype(test<T>(0));
-
+/* While compile this src file with msvc1937: fatal error1001 */
+#if defined(_MSC_VER) && (_MSC_VER == 1937)
  public:
   is_streamable() = default;
-
+  /* WORNING: if the bug of msvc v1973 do not fix of this.
+   * May couse compile error!!! */
+  static const bool value = true;
+#else
+  using result = decltype(test<T>(0));
+ public:
+  is_streamable() = default;
   static const bool value = result::value;
+#endif
 };
 
 // Formatting of built-in types and arrays is intentionally disabled because
